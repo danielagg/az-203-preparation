@@ -1,0 +1,17 @@
+VM:
+- Image: deployed onto VM, the OS
+- Network
+- Block storage: store VM and app data
+
+When creating virtual network for VM, specify a subnet
+-> Azure can generate it by itself though
+
+
+Create from portal:
+1) Virtual Network
+- address space (?)
+- subnet (name, address range?)
+
+2) VM
+Managed storage?
+- select public inbound ports (here we can specify RDP in case of Windows VM, or SSH for Linux [but even http, https, ms sql])
