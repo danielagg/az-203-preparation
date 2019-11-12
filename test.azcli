@@ -68,3 +68,15 @@ ssh -l demoadmin nnn.nn.nnn.nn
 
 
 az vm create --help | more
+
+az keyvault create \
+  --name "<your-unique-keyvault-name>" \
+  --resource-group "myResourceGroup" \
+  --location "eastus" \
+  --enabled-for-disk-encryption
+
+az vm encryption enable \
+  -g "MyResourceGroup" \
+  -n "myVM" \
+  --disk-encryption-keyvault "<your-unique-keyvault-name>"
+

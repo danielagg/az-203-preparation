@@ -101,3 +101,22 @@ $IpOfVm = Get-AzureRmPublicIpAddress `
   -Location $resourceGroup.Location | Select-Object -ExpandProperty -PublicIpAddress
 
 $IpOfVm
+
+
+New-AzKeyvault `
+  -name "<your-unique-keyvault-name>" `
+  -ResourceGroupName "myResourceGroup" `
+  -Location EastUS `
+  -EnabledForDiskEncryption
+
+$KeyVault = Get-AzKeyVault `
+  -VaultName "<your-unique-keyvault-name>"
+  -ResourceGroupName "MyResourceGroup"
+
+Set-AzVMDiskEncryptionExtension `
+  -ResourceGroupName MyResourceGroup `
+  -VMName "MyVM" `
+  -DiskEncryptionKeyVaultUrl $KeyVault.VaultUri `
+  -DiskEncryptionKeyVaultId $KeyVault.ResourceId `
+  -SkipVmBackup `
+  -VolumeType All  
