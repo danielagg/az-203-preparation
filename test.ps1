@@ -119,4 +119,41 @@ Set-AzVMDiskEncryptionExtension `
   -DiskEncryptionKeyVaultUrl $KeyVault.VaultUri `
   -DiskEncryptionKeyVaultId $KeyVault.ResourceId `
   -SkipVmBackup `
-  -VolumeType All  
+  -VolumeType All
+
+
+
+
+
+$keyVault = New-AzureRmKeyVault `
+  -VaultName 'az203DemoEncryptionVault' `
+  -ResourceGroupName 'az203-EncryptionDemo' `
+  -Location 'West US'
+
+Set-AzureRmKeyVaultAccessPolicy `
+  -VaultName 'az203DemoEncryptionVault' `
+  -ResourceGroupName 'az203-EncryptionDemo' `
+  -EnabledForDiskEncryption
+
+Set-AzureRmKeyVaultAccessPolicy `
+  -VaultName 'az203DemoEncryptionVault' `
+  -UserPrincipalName '<your_AAD_username>' `
+  -PermissionsToKeys Get,List,Update,Create,Import,Delete -PermissionsToSecrets Get,List,Set,Delete,Recover,Backup,Restore
+
+Add-AzureKeyVaultKey `
+  -VaultName 'az203DemoEncryptionVault'
+  -Name 'az203VMEncryptionKey' -Destination 'Software';
+
+$keyEncryptionKeyUrl = ( `
+  Get-AzureKeyVaultKey `
+    -VaultName 'az203DemoEncryptionVault' `
+    -Name 'az203VMEncryptionKey' `
+).Key.kid;
+
+Set-AzureRmVMDiskEncryptionExtension `
+  -ResourceGroupName 'az203-EncryptionDemo' `
+  -VMName 'az203demoVM' `
+  -DiskEncryptionKeyVaultUrl $keyVault.VaultUri `
+  -DiskEncryptionKeyVaultId $keyVault.ResourceId `
+  -KeyEncryptionKeyUrl $keyEncryptionKeyUrl `
+  -KeyEncryptionKeyVaultId $keyVault.ResourceId;
